@@ -5,12 +5,12 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-class GraphicsApp
+class Game
 {
 public:
-	GraphicsApp();
-	GraphicsApp(int width, int height, const char* title);
-	~GraphicsApp();
+	Game();
+	Game(int width, int height, const char* title);
+	~Game();
 
 	int run();
 

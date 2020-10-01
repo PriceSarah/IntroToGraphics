@@ -1,26 +1,26 @@
-#include "GraphicsApp.h"
+#include "Game.h"
 #include <cstdio>
 #include <time.h>
 
-GraphicsApp::GraphicsApp()
+Game::Game()
 {
 	m_width = 1280;
 	m_height = 720;
 	m_title = "Computer Graphics";
 }
 
-GraphicsApp::GraphicsApp(int width, int height, const char* title)
+Game::Game(int width, int height, const char* title)
 {
 	m_width = width;
 	m_height = height;
 	m_title = title;
 }
 
-GraphicsApp::~GraphicsApp()
+Game::~Game()
 {
 }
 
-int GraphicsApp::run()
+int Game::run()
 {
 	double deltaTime = 0.0;
 	double timeOfPreviousUpdate = 0.0;
@@ -46,7 +46,7 @@ int GraphicsApp::run()
 	return 0;
 }
 
-bool GraphicsApp::start()
+bool Game::start()
 {
 	using glm::vec3;
 	using glm::vec4;
@@ -102,7 +102,7 @@ bool GraphicsApp::start()
 	return true;
 }
 
-bool GraphicsApp::update()
+bool Game::update()
 {
 	glfwPollEvents();
 
@@ -114,7 +114,7 @@ bool GraphicsApp::update()
 	return true;
 }
 
-bool GraphicsApp::draw()
+bool Game::draw()
 {
 	using glm::vec3;
 	using glm::vec4;
@@ -148,7 +148,7 @@ bool GraphicsApp::draw()
 	return true;
 }
 
-bool GraphicsApp::end()
+bool Game::end()
 {
 	//Destroy the Gizmos
 	aie::Gizmos::destroy();
