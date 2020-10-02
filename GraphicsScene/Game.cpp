@@ -1,6 +1,6 @@
 #include "Game.h"
+#include "Camera.h"
 #include <cstdio>
-#include <time.h>
 
 Game::Game()
 {
@@ -22,10 +22,11 @@ Game::~Game()
 
 int Game::run()
 {
-	double deltaTime = 0.0;
-	double timeOfPreviousUpdate = 0.0;
 	bool updating = true;
 	bool drawing = true;
+
+	double deltaTime = 0.0f;
+	double timeOfPreviousUpdate = 0.0;
 
 	if (!start())
 		return -1;
@@ -34,15 +35,17 @@ int Game::run()
 		//Get the current time
 		double timeOfCurrentUpdate = glfwGetTime();
 		//Find the change in time
-		deltaTime - timeOfCurrentUpdate - timeOfPreviousUpdate;
+		deltaTime = timeOfCurrentUpdate - timeOfPreviousUpdate;
 		//Store the current time for the next loop
 		timeOfPreviousUpdate = timeOfCurrentUpdate;
-		updating = update();
+
+		updating = update(deltaTime);
 		drawing = draw();
 	}
 
 	if (!end())
 		return -2;
+
 	return 0;
 }
 
@@ -57,7 +60,7 @@ bool Game::start()
 		return false;
 	}
 
-	//create a window
+	//Create a window
 	m_window = glfwCreateWindow(m_width, m_height, m_title, nullptr, nullptr);
 
 	//Ensure the window was created
@@ -85,24 +88,22 @@ bool Game::start()
 	aie::Gizmos::create(10000, 10000, 10000, 10000);
 
 	//Set up the camera
-	m_view = glm::lookAt(
-		vec3(10, 10, 10),
-		vec3(0, 0, 0),
-		vec3(0, 1, 0));
-	m_projection = glm::perspective(
-		glm::pi<float>() * 0.25f,
-		16.0f / 9.0f,
-		0.1f, 1000.0f);
+	m_camera = new Camera(this);
+	m_camera->setPosition({ 10, 10, 10 });
+	m_camera->setYaw(-135.0f);
+	m_camera->setPitch(-45.0f);
 
 	//Set the clear color
 	glClearColor(0.05f, 0.05f, 0.025f, 1.0f);
 	//Enable OpenGL depth test
 	glEnable(GL_DEPTH_TEST);
 
+	m_ball = new Ball({ 0.8f, 0.1f, 0.1f, 1.0f }, 2.0f);
+
 	return true;
 }
 
-bool Game::update()
+bool Game::update(double deltaTime)
 {
 	glfwPollEvents();
 
@@ -110,6 +111,8 @@ bool Game::update()
 	if (glfwWindowShouldClose(m_window) || glfwGetKey(m_window, GLFW_KEY_ESCAPE)) {
 		return false;
 	}
+
+	m_camera->update(deltaTime);
 
 	return true;
 }
@@ -141,7 +144,9 @@ bool Game::draw()
 			i == 10 ? white : grey);
 	}
 
-	aie::Gizmos::draw(m_projection * m_view);
+	m_ball->draw();
+
+	aie::Gizmos::draw(m_camera->getProjectionMatrix(m_width, m_height) * m_camera->getViewMatrix());
 
 	glfwSwapBuffers(m_window);
 
@@ -150,6 +155,8 @@ bool Game::draw()
 
 bool Game::end()
 {
+	delete m_ball;
+
 	//Destroy the Gizmos
 	aie::Gizmos::destroy();
 
