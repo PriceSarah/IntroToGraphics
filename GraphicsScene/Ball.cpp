@@ -17,7 +17,7 @@ Ball::Ball(glm::vec4 color, float radius)
 bool Ball::draw()
 {
 	//build a transform matrix
-	glm::mat4 transform = glm::translate(m_position) * glm::toMat4(m_rotation);
+	glm::mat4 transform = getTransform();
 	//draw the transform
 	aie::Gizmos::addTransform(transform, m_radius * 2.0f);
 	//draw  the ball
