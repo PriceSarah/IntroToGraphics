@@ -10,10 +10,10 @@ Bone::Bone(Actor startFrame, Actor endFrame)
 
 bool Bone::update(double deltaTime)
 {
-	//Find a time-based value in the range of [0,1]
+	//Find a time-based value in the range of [0, 1]
 	float s = glm::cos(glfwGetTime()) * 0.5f + 0.5f;
 
-	//standard linear interpolation
+	//Standard linear interpolation
 	glm::vec3 startPosition(m_startFrame.getPosition());
 	glm::vec3 endPosition(m_endFrame.getPosition());
 	glm::vec3 p = (1.0f - s) * startPosition + s * endPosition;
@@ -31,9 +31,10 @@ bool Bone::update(double deltaTime)
 
 bool Bone::draw()
 {
+	//Build a transform matrix
 	glm::mat4 transform = getTransform();
+	//Draw the bone
+	aie::Gizmos::addAABBFilled(glm::vec3(0.0f), glm::vec3(0.5f), glm::vec4(0.9f, 0.9f, 0.8f, 0.25f), &transform);
 
-	aie::Gizmos::addAABBFilled(glm::vec3(0.0f), glm::vec3(0.5f), glm::vec4(0.8f, 0.8f, 0.6f, 0.8f), &transform);
-
-	return false;
+	return true;
 }

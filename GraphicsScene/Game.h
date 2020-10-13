@@ -4,8 +4,11 @@
 #include <Gizmos.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include "Shader.h"
+#include "Mesh.H"
 #include "Ball.h"
 #include "Bone.h"
+#include "Skeleton.h"
 
 class Camera;
 
@@ -29,15 +32,19 @@ public:
 	const char* getTitle() { return m_title; }
 
 protected:
-	GLFWwindow* m_window;
-	Camera* m_camera;
-	Ball* m_ball;
-	Actor* m_startActor;
-	Actor* m_endActor;
-	Bone* m_bone;
+	GLFWwindow*			 m_window;
+	Camera*				 m_camera;
+
+	aie::ShaderProgram	 m_shader;
+	Mesh				 m_quadMesh;
+	glm::mat4			 m_quadTransform;
+
+	Bone*				 m_hipBone;
+	Bone*				 m_kneeBone;
+	Bone*				 m_ankleBone;
+	Skeleton*			 m_skeleton;
 
 private:
-	int m_width;
-	int m_height;
+	int m_width, m_height;
 	const char* m_title;
 };

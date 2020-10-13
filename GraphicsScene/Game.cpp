@@ -93,27 +93,60 @@ bool Game::start()
 	m_camera->setYaw(-135.0f);
 	m_camera->setPitch(-45.0f);
 
+	//Initialize the quad
+	m_quadMesh.initializeQuad();
+
+	//Set up the quad transform
+	m_quadTransform = {
+		10, 0, 0, 0,
+		0, 10, 0, 0,
+		0, 0, 10, 0,
+		0, 0, 0, 1};
+
 	//Set the clear color
 	glClearColor(0.05f, 0.05f, 0.025f, 1.0f);
 	//Enable OpenGL depth test
 	glEnable(GL_DEPTH_TEST);
 
-	//create a ball
-	//m_ball = new Ball({ 0.8f, 0.1f, 0.1f, 1.0f }, 1.0f);
-	//create a placeholder for a starting position and rotation
-	m_startActor = new Actor();
-	m_startActor->setPosition({ 10.0f, 5.0f, 10.0f });
-	m_startActor->setRotation(glm::vec3(0.0f, -1.0f, 0.0f));
-	//create a placeholder for an ending position and rotation
-	m_endActor = new Actor();
-	m_endActor->setPosition({ -10.0f, 0.0f, -10.0f });
-	m_endActor->setRotation(glm::vec3(0.0f, 1.0f, -1.0f));
-	//set the balls position and rotation to the start
-	//m_ball->setPosition(m_startActor->getPosition());
-	//m_ball->setRotation(m_startActor->getPosition());
+	//Initialize shader
+	m_shader.loadShader(
+		aie::eShaderStage::VERTEX,
+		"simple.vert"
+	);
+	m_shader.loadShader(
+		aie::eShaderStage::FRAGMENT,
+		"simple.frag"
+	);
+	if (!m_shader.link()) {
+		printf(
+			"Shader Error: %s\n",
+			m_shader.getLastError()
+		);
+		return false;
+	}
 
-	//Create a bone
-	m_bone = new Bone(*m_endActor, *m_startActor);
+	//Create bones
+	m_hipBone = new Bone({
+		{ 0.0f, 5.0f, 0.0f }, glm::vec3(1.0f, 0.0f, 0.0f) },
+		{ { 0.0f, 5.0f, 0.0f }, glm::vec3(-1.0f, 0.0f, 0.0f) }
+	);
+	m_kneeBone = new Bone({
+		{ 0.0f, -2.5f, 0.0f }, glm::vec3(1.0f, 0.0f, 0.0f) },
+		{ { 0.0f, -2.5f, 0.0f }, glm::vec3(0.0f, 0.0f, 0.0f) }
+	);
+	m_ankleBone = new Bone({
+		{ 0.0f, -2.5f, 0.0f }, glm::vec3(-1.0f, 0.0f, 0.0f) },
+		{ { 0.0f, -2.5f, 0.0f }, glm::vec3(0.0f, 0.0f, 0.0f) }
+	);
+	m_kneeBone->setParent(m_hipBone);
+	m_ankleBone->setParent(m_kneeBone);
+
+	//Create a skeleton
+	m_skeleton = new Skeleton();
+	//Add the bone to the skeleton
+	m_skeleton->addBone(m_hipBone);
+	m_skeleton->addBone(m_kneeBone);
+	m_skeleton->addBone(m_ankleBone);
 
 	return true;
 }
@@ -129,24 +162,7 @@ bool Game::update(double deltaTime)
 
 	m_camera->update(deltaTime);
 
-	//Find a time-based value in the range of [0, 1]
-	float s = glm::cos(glfwGetTime()) * 0.5f + 0.5f;
-
-	//standard linear interpolation
-	glm::vec3 startPosition(m_startActor->getPosition());
-	glm::vec3 endPosition(m_endActor->getPosition());
-	glm::vec3 p = (1.0f - s) * startPosition + s * endPosition;
-
-	//Quaternion slerp
-	glm::quat startRotation(m_startActor->getRotation());
-	glm::quat endRotation(m_endActor->getRotation());
-	glm::quat r = glm::slerp(startRotation, endRotation, s);
-
-	//Update position and rotation of the ball
-	//m_ball->setPosition(p);
-	//m_ball->setRotation(r);
-
-	m_bone->update(deltaTime);
+	m_skeleton->update(deltaTime);
 
 	return true;
 }
@@ -177,11 +193,26 @@ bool Game::draw()
 			vec3(-10, 0, -10 + i),
 			i == 10 ? white : grey);
 	}
+	//Get the Projection and view materials
+	mat4 projectionMatrix = m_camera->getProjectionMatrix(m_width, m_height);
+	mat4 viewMatrix = m_camera->getViewMatrix();
 
-	//m_ball->draw();
-	m_bone->draw();
+	//Bind Shader
+	m_shader.bind();
 
-	aie::Gizmos::draw(m_camera->getProjectionMatrix(m_width, m_height) * m_camera->getViewMatrix());
+	//Bind Transform
+	mat4 pvm = projectionMatrix * viewMatrix * m_quadTransform;
+	m_shader.bindUniform("ProjectionViewModel", pvm);
+
+	//Bind time
+	m_shader.bindUniform("timePassed", (float)glfwGetTime());
+
+	//Draw quad
+	m_quadMesh.draw();
+
+	m_skeleton->draw();
+
+	aie::Gizmos::draw(projectionMatrix * viewMatrix);
 
 	glfwSwapBuffers(m_window);
 
@@ -190,7 +221,10 @@ bool Game::draw()
 
 bool Game::end()
 {
-	//delete m_ball;
+	delete m_hipBone;
+	delete m_kneeBone;
+	delete m_ankleBone;
+	delete m_skeleton;
 
 	//Destroy the Gizmos
 	aie::Gizmos::destroy();
