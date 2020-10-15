@@ -12,7 +12,7 @@ glm::mat4 Actor::getTransform()
         return m_parent->getTransform() * glm::translate(m_position) * glm::toMat4(m_rotation);
     }
 
-    return glm::translate(m_position) * glm::toMat4(m_rotation);
+    return glm::translate(m_position) * glm::toMat4(m_rotation) * glm::scale(m_scale);
 }
 
 glm::vec3 Actor::getParentPosition()

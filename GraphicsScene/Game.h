@@ -1,11 +1,13 @@
 #pragma once
 #include <gl_core_4_4.h>
 #include <GLFW/glfw3.h>
-#include <Gizmos.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <Gizmos.h>
+#include <Texture.h>
 #include "Shader.h"
-#include "Mesh.H"
+#include "Mesh.h"
+#include "OBJMesh.h"
 #include "Ball.h"
 #include "Bone.h"
 #include "Skeleton.h"
@@ -32,17 +34,23 @@ public:
 	const char* getTitle() { return m_title; }
 
 protected:
-	GLFWwindow*			 m_window;
-	Camera*				 m_camera;
+	GLFWwindow* m_window;
+	Camera* m_camera;
 
-	aie::ShaderProgram	 m_shader;
-	Mesh				 m_quadMesh;
-	glm::mat4			 m_quadTransform;
 
-	Bone*				 m_hipBone;
-	Bone*				 m_kneeBone;
-	Bone*				 m_ankleBone;
-	Skeleton*			 m_skeleton;
+	aie::ShaderProgram	m_shader;
+
+	aie::OBJMesh m_objMesh;
+	aie::Texture m_objTexture;
+
+	Mesh				m_mesh;
+	glm::mat4			m_meshTransform;
+	aie::Texture		m_texture;
+
+	Bone* m_hipBone;
+	Bone* m_kneeBone;
+	Bone* m_ankleBone;
+	Skeleton* m_skeleton;
 
 private:
 	int m_width, m_height;

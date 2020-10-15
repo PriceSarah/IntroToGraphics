@@ -84,25 +84,6 @@ bool Game::start()
 	int minor = ogl_GetMinorVersion();
 	printf("OpenGL version: %i.%i\n", major, minor);
 
-	//Initialize Gizmos
-	aie::Gizmos::create(10000, 10000, 10000, 10000);
-
-	//Set up the camera
-	m_camera = new Camera(this);
-	m_camera->setPosition({ 10, 10, 10 });
-	m_camera->setYaw(-135.0f);
-	m_camera->setPitch(-45.0f);
-
-	//Initialize the quad
-	m_quadMesh.initializeQuad();
-
-	//Set up the quad transform
-	m_quadTransform = {
-		10, 0, 0, 0,
-		0, 10, 0, 0,
-		0, 0, 10, 0,
-		0, 0, 0, 1};
-
 	//Set the clear color
 	glClearColor(0.05f, 0.05f, 0.025f, 1.0f);
 	//Enable OpenGL depth test
@@ -124,6 +105,43 @@ bool Game::start()
 		);
 		return false;
 	}
+
+	//Load Earth texture
+	if (!m_texture.load("earth_diffuse.jpg")) {
+		printf("Failed to load texture.\n");
+		return false;
+	}
+
+	//Load soul spear
+	if (!m_objMesh.load("soulspear.obj")) {
+		printf("Failed to load obj.\n");
+		return false;
+	}
+
+	if (!m_objTexture.load("soulspear_diffuse.tga")) {
+		printf("Failed to load soulspear_diffuse.tga.\n");
+		return false;
+	}
+
+	//Initialize Gizmos
+	aie::Gizmos::create(10000, 10000, 10000, 10000);
+
+	//Set up the camera
+	m_camera = new Camera(this);
+	m_camera->setPosition({ 10, 10, 10 });
+	m_camera->setYaw(-135.0f);
+	m_camera->setPitch(-45.0f);
+
+	//Initialize the mesh
+	m_mesh.initializeCube();
+
+	//Set up the quad transform
+	m_meshTransform = {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
 
 	//Create bones
 	m_hipBone = new Bone({
@@ -193,24 +211,32 @@ bool Game::draw()
 			vec3(-10, 0, -10 + i),
 			i == 10 ? white : grey);
 	}
-	//Get the Projection and view materials
+
+	//Get the projection and view matrices
 	mat4 projectionMatrix = m_camera->getProjectionMatrix(m_width, m_height);
 	mat4 viewMatrix = m_camera->getViewMatrix();
 
-	//Bind Shader
+	//Bind shader
 	m_shader.bind();
 
-	//Bind Transform
-	mat4 pvm = projectionMatrix * viewMatrix * m_quadTransform;
+	//Bind transform
+	mat4 pvm = projectionMatrix * viewMatrix * m_meshTransform;
 	m_shader.bindUniform("ProjectionViewModel", pvm);
 
-	//Bind time
-	m_shader.bindUniform("timePassed", (float)glfwGetTime());
+	//Bind texture
+	m_shader.bindUniform("diffuseTexture", 0);
+	m_texture.bind(0);
 
-	//Draw quad
-	m_quadMesh.draw();
+	//Draw Earth mesh
+	m_mesh.draw();
 
-	m_skeleton->draw();
+	//Bind Material
+	m_shader.bindUniform("diffuseTexture", 0);
+
+	//draw obj mesh
+	m_objMesh.draw();
+
+	//m_skeleton->draw();
 
 	aie::Gizmos::draw(projectionMatrix * viewMatrix);
 
