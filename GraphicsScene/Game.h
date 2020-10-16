@@ -1,3 +1,4 @@
+
 #pragma once
 #include <gl_core_4_4.h>
 #include <GLFW/glfw3.h>
@@ -5,12 +6,13 @@
 #include <glm/ext.hpp>
 #include <Gizmos.h>
 #include <Texture.h>
+#include "OBJMesh.h"
 #include "Shader.h"
 #include "Mesh.h"
-#include "OBJMesh.h"
 #include "Ball.h"
 #include "Bone.h"
 #include "Skeleton.h"
+#include "Earth.h"
 
 class Camera;
 
@@ -40,11 +42,13 @@ protected:
 
 	aie::ShaderProgram	m_shader;
 
-	aie::OBJMesh m_objMesh;
-	aie::Texture m_objTexture;
+	aie::OBJMesh		m_objMesh;
+	aie::Texture		m_objTexture;
+	glm::mat4			m_meshTransform;
+
+	Earth* m_earth;
 
 	Mesh				m_mesh;
-	glm::mat4			m_meshTransform;
 	aie::Texture		m_texture;
 
 	Bone* m_hipBone;

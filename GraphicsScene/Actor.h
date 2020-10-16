@@ -9,7 +9,7 @@ class Actor
 {
 public:
 	Actor() {}
-	Actor(glm::vec3 position, glm::quat rotation);
+	Actor(glm::vec3 position, glm::quat rotation, glm::vec3 scale = { 1.0f, 1.0f, 1.0f });
 	~Actor() {}
 
 	virtual bool start() { return true; }
