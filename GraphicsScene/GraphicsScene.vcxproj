@@ -192,6 +192,7 @@
     <None Include="Bunny.mtl" />
     <None Include="Dragon.mtl" />
     <None Include="Lucy.mtl" />
+    <None Include="phong.vert" />
     <None Include="simple.frag" />
     <None Include="simple.vert" />
     <None Include="soulspear.mtl" />

@@ -61,6 +61,16 @@ void Mesh::initialize(
 		sizeof(Vertex),
 		(GLvoid*)(12 * sizeof(float))
 	);
+	//Enable second element as normal
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(
+		1,
+		4,
+		GL_FLOAT,
+		GL_TRUE,
+		sizeof(Vertex),
+		(GLvoid*)(4 * sizeof(float))
+	);
 
 	//Bind indices if there are any
 	if (indexCount != 0) {
