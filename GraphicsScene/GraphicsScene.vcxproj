@@ -165,6 +165,7 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Earth.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OBJMesh.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Earth.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="OBJMesh.h" />
     <ClInclude Include="Shader.h" />
@@ -192,6 +194,7 @@
     <None Include="Bunny.mtl" />
     <None Include="Dragon.mtl" />
     <None Include="Lucy.mtl" />
+    <None Include="phong.frag" />
     <None Include="phong.vert" />
     <None Include="simple.frag" />
     <None Include="simple.vert" />
